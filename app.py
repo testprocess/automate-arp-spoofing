@@ -10,6 +10,17 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__() 
 
+        self.setWindowTitle("ARP Spoofing by H2J")
+
+        btn = QPushButton(text="Send ARP", parent=self)
+        btn.move(10, 10)
+        btn.clicked.connect(self.sendArp)
+
+    def sendArp(self):
+        arp = SendARP("192.168.0.62", "192.168.0.1")
+        arp.send()
+
+
 
 
 
@@ -93,7 +104,6 @@ if __name__ == "__main__":
     win = Window()
     win.show()
     app.exec_()
-    
-    arp = SendARP("192.168.0.62", "192.168.0.1")
-    arp.send()
+
+
     
