@@ -3,16 +3,24 @@ import argparse
 import time
 import os
 import sys
+import sys 
+from PyQt5.QtWidgets import * 
 
-
-class SendARP:
+class Window(QMainWindow):
     def __init__(self):
-        self.result = 0
+        super().__init__() 
 
-    def send(self, target, host):
+
+
+
+class SendARP(object):
+    def __init__(self, target, host):
         self.target = target
         self.host = host
         self.verbose = True
+
+
+    def send(self):
         self.enable_ip_route()
         try:
             while True:
@@ -80,6 +88,12 @@ class SendARP:
 
 
 if __name__ == "__main__":
-    arp = SendARP()
-    arp.send("192.168.0.62", "192.168.0.1")
-    pass
+
+    app = QApplication(sys.argv)
+    win = Window()
+    win.show()
+    app.exec_()
+    
+    arp = SendARP("192.168.0.62", "192.168.0.1")
+    arp.send()
+    
