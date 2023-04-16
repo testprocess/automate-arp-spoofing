@@ -23,6 +23,8 @@ class PrepareARP():
 
 
 class SendARP(QThread):
+    prompt = pyqtSignal(str)
+
     def __init__(self, target, host):
         super().__init__()
 
@@ -30,7 +32,6 @@ class SendARP(QThread):
         self.host = host
         self.verbose = True
 
-        #self.exec()
 
     def run(self):
         self.exec()
@@ -92,7 +93,9 @@ class SendARP(QThread):
         send(arp_response, verbose=0)
         if self.verbose:
             self_mac = ARP().hwsrc
-            print("[+] Sent to {} : {} is-at {}".format(self.target, self.host, self_mac))
+            message = "[+] Sent to {} : {} is-at {}".format(self.target, self.host, self_mac)
+            self.prompt.emit(message)
+            print(message)
 
 
     def restore(self):
@@ -101,4 +104,6 @@ class SendARP(QThread):
         arp_response = ARP(pdst=self.target, hwdst=target_mac, psrc=self.host, hwsrc=host_mac, op="is-at")
         send(arp_response, verbose=0, count=7)
         if self.verbose:
-            print("[+] Sent to {} : {} is-at {}".format(self.target, self.host, host_mac))
+            message = "[+] Sent to {} : {} is-at {}".format(self.target, self.host, host_mac)
+            self.prompt.emit(message)
+            print(message)
