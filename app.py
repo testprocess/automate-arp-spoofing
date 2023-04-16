@@ -4,6 +4,7 @@ import time
 import os
 import sys
 import sys 
+from PyQt5.QtCore import QCoreApplication, QObject, QRunnable, QThread, QThreadPool
 from PyQt5.QtWidgets import * 
 
 class Window(QMainWindow):
@@ -12,32 +13,51 @@ class Window(QMainWindow):
 
         self.setWindowTitle("ARP Spoofing by H2J")
 
+        self.target_label = QLabel(self)
+        self.target_label.move(20, 50)
+        self.target_label.setText('Target IP')
+        self.targetLine = QLineEdit(self)
+        self.targetLine.move(20,70)
+
+        self.host_label = QLabel(self)
+        self.host_label.move(20, 100)
+        self.host_label.setText('Host IP')
+        self.hostLine = QLineEdit(self)
+        self.hostLine.move(20,120)
+
         btn = QPushButton(text="Send ARP", parent=self)
         btn.move(10, 10)
         btn.clicked.connect(self.sendArp)
 
     def sendArp(self):
-        arp = SendARP("192.168.0.62", "192.168.0.1")
-        arp.send()
+        targetInput = self.targetLine.text()
+        hostInput = self.hostLine.text()
+
+        self.arp = SendARP(targetInput, hostInput)
+        self.arp.send()
 
 
 
 
 
-class SendARP(object):
+class SendARP(QThread):
     def __init__(self, target, host):
+        super().__init__()
+
         self.target = target
         self.host = host
         self.verbose = True
+
 
 
     def send(self):
         self.enable_ip_route()
         try:
             while True:
+                QCoreApplication.processEvents()
                 self.spoof()
                 self.spoof()
-                time.sleep(1)
+                #time.sleep(1)
         except KeyboardInterrupt:
             print("[!] Detected CTRL+C ! restoring the network, please wait...")
             self.restore()
