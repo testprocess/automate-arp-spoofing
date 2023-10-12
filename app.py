@@ -61,13 +61,18 @@ class Window(QMainWindow):
 
     def scanIp(self):
         self.ipscan = ip.ScanIPRange(self.GATEWAY_IP)
-        ipArray = self.ipscan.getPorts()
-        count = 0
-        for ipItem in ipArray:
-            self.iplist.insertItem(count, ipItem)
-            count += 1
+        self.ipArray = self.ipscan.getIps()
+        self.ipArrayItem = []
+
+        for ipItem in self.ipArray:
+            item = QListWidgetItem(ipItem)
+            item.setBackground( QColor('#ffffff') )
+            self.ipArrayItem.append(item)
+            self.iplist.addItem(item)
         
         self.ipscan.start()
+        self.ipscan.prompt.connect(self.receiveActiveIp)
+
 
 
     def sendArp(self):
@@ -76,6 +81,21 @@ class Window(QMainWindow):
         self.arp = arp.SendARP(targetInput, hostInput)
         self.arp.start()
         self.arp.prompt.connect(self.receiveFromArp)
+
+
+    def changeColorIpItem(self, ip, color):
+        index = self.ipArray.index(ip)
+        self.ipArrayItem[index].setBackground( QColor(color) )
+
+
+    @pyqtSlot(str, bool)
+    def receiveActiveIp(self, ipName, isActive):
+        
+        # ipName = parameter[0]
+        # isActive = parameter[1]
+        print("f", ip)
+        color = '#7fc97f'  if isActive == True else "#f26363"
+        self.changeColorIpItem(ipName, color)
 
 
     @pyqtSlot(str)
