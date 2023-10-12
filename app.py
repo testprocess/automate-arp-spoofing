@@ -67,11 +67,13 @@ class Window(QMainWindow):
         for ipItem in self.ipArray:
             item = QListWidgetItem(ipItem)
             item.setBackground( QColor('#ffffff') )
+            
             self.ipArrayItem.append(item)
             self.iplist.addItem(item)
         
         self.ipscan.start()
         self.ipscan.prompt.connect(self.receiveActiveIp)
+        self.iplist.itemClicked.connect(self.handleClickIpItem)
 
 
 
@@ -86,6 +88,9 @@ class Window(QMainWindow):
     def changeColorIpItem(self, ip, color):
         index = self.ipArray.index(ip)
         self.ipArrayItem[index].setBackground( QColor(color) )
+
+    def handleClickIpItem(self, item):
+        self.targetLine.setText(item.text())
 
 
     @pyqtSlot(str, bool)
