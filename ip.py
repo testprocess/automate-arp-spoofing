@@ -1,6 +1,7 @@
 import subprocess 
 from PyQt5.QtCore import QCoreApplication, QObject, QRunnable, pyqtSignal, QThread
-
+from multiprocessing import Process
+import threading
 
 class ScanIPRange(QThread):
     prompt = pyqtSignal(str, bool)
@@ -9,23 +10,31 @@ class ScanIPRange(QThread):
         super().__init__()
         self.gateway = gateway
 
+    def chunk(self, list, n):
+        return [list[i:i+n] for i in range(0, len(list), n)]
 
     def getIps(self):
         return [".".join(self.gateway.split(".")[:3] + [str(i)]) for i in range(2, 255)]
-
-    def scan(self):
+    
+    def scanAll(self):
         ips = self.getIps()
-        for ipItem in ips:
-            res = subprocess.call(['ping', '-c', '3', ipItem]) 
-            if res == 0: 
-                print( "ping to", ipItem, "OK") 
-                self.prompt.emit(ipItem, True)
-            elif res == 2: 
-                print("no response from", ipItem) 
-                self.prompt.emit(ipItem, False)
+        chunkRange = 10
+        ipChunk = self.chunk(ips, chunkRange)
+        for ipList in ipChunk:
+            for ips in ipList:
+                x = threading.Thread(target=self.scan, args=(ips,), daemon=True)
+                x.start()
+                print(x.isDaemon())
+                # self.scan(ips)
 
-            else: 
-                print("ping to", ipItem, "failed!") 
+    def scan(self, ip):
+        res = subprocess.call(['ping', '-c', '3', ip]) 
+        if res == 0: 
+            self.prompt.emit(ip, True)
+        elif res == 2: 
+            self.prompt.emit(ip, False)
+
+
 
     def run(self):
-        self.scan()
+        self.scanAll()
