@@ -74,7 +74,8 @@ class SendARP(QThread):
             pass
             #_enable_windows_iproute() 
         elif ("posix" in os.name):
-            self._enable_mac_iproute()
+            #self._enable_mac_iproute()
+            pass
         else:
             self._enable_linux_iproute()
 
