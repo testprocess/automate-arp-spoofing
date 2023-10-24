@@ -3,7 +3,7 @@ from PyQt5.QtCore import QCoreApplication, QObject, QRunnable, pyqtSignal, QThre
 from multiprocessing import Process
 import threading
 import os
-
+from re import findall
 
 class ScanIPRange(QThread):
     prompt = pyqtSignal(str, bool)
@@ -31,14 +31,22 @@ class ScanIPRange(QThread):
 
     def scan(self, ip):
         if ("nt" in os.name):
-            res = subprocess.call(['ping', '-n', '3', ip]) 
+            res = subprocess.Popen(f"ping -n 3 {ip}", stdout=subprocess.PIPE)
+            isInclude = len(findall("TTL", str(res.stdout.readlines()))) >= 1
+
+            if isInclude: 
+                self.prompt.emit(ip, True)
+            else: 
+                self.prompt.emit(ip, False)
         else:
             res = subprocess.call(['ping', '-c', '3', ip]) 
-        
-        if res == 0: 
-            self.prompt.emit(ip, True)
-        elif res == 2: 
-            self.prompt.emit(ip, False)
+            
+            if res == 0: 
+                self.prompt.emit(ip, True)
+            elif res == 2: 
+                self.prompt.emit(ip, False)
+
+
 
 
 

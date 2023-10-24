@@ -1,7 +1,6 @@
 from scapy.all import Ether, ARP, srp, send
 import time
 import os
-import sys 
 from PyQt5.QtCore import QCoreApplication, QObject, QRunnable, pyqtSignal, QThread
 from PyQt5.QtWidgets import * 
 from PyQt5.QtTest import *

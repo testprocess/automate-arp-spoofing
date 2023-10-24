@@ -1,16 +1,11 @@
 from scapy.all import Ether, ARP, srp, send
-import argparse
-import time
-import os
 import sys
-import sys 
 from PyQt5.QtCore import QCoreApplication, QObject, QRunnable, QThread, QThreadPool, pyqtSlot
 from PyQt5.QtWidgets import * 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import socket
 import netifaces
-
+import os
 import arp
 import ip
 
@@ -57,6 +52,7 @@ class Window(QMainWindow):
         btnIp = QPushButton(text="Scan IP", parent=self)
         btnIp.move(120, 10)
         btnIp.clicked.connect(self.scanIp)
+
 
 
     def scanIp(self):
