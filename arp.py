@@ -54,27 +54,13 @@ class SendARP(QThread):
         # sysctl -w net.inet.ip.forwarding=1
         pass
 
-    def _enable_linux_iproute():
-        file_path = "/proc/sys/net/ipv4/ip_forward"
-        with open(file_path) as f:
-            if f.read() == 1:
-                return
-        with open(file_path, "w") as f:
-            print(1, file=f)
-
-    def _enable_windows_iproute():
-        from services import WService
-        service = WService("RemoteAccess")
-        service.start()
 
     def enable_ip_route(verbose=True):
         if verbose:
             print("[!] Enabling IP Routing...")
         if ("nt" in os.name):
             pass
-            #_enable_windows_iproute() 
         elif ("posix" in os.name):
-            #self._enable_mac_iproute()
             pass
         else:
             self._enable_linux_iproute()

@@ -2,6 +2,8 @@ import subprocess
 from PyQt5.QtCore import QCoreApplication, QObject, QRunnable, pyqtSignal, QThread
 from multiprocessing import Process
 import threading
+import os
+
 
 class ScanIPRange(QThread):
     prompt = pyqtSignal(str, bool)
@@ -28,7 +30,11 @@ class ScanIPRange(QThread):
                 # self.scan(ips)
 
     def scan(self, ip):
-        res = subprocess.call(['ping', '-c', '3', ip]) 
+        if ("nt" in os.name):
+            res = subprocess.call(['ping', '-n', '3', ip]) 
+        else:
+            res = subprocess.call(['ping', '-c', '3', ip]) 
+        
         if res == 0: 
             self.prompt.emit(ip, True)
         elif res == 2: 
